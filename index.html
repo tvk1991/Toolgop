@@ -195,7 +195,8 @@
 
     <script>
         let customers = JSON.parse(localStorage.getItem('calc_customers_v3')) || [
-            { id: 1, name: "NGUYEN VAN A", phone: "012345678", amount: 38.000.000, feeRate: 2.0 , interestRate: 0.50, term: 24 },
+            { id: 1, name: "NGUYEN VAN B", phone: "0912345678", amount: 1000000, feeRate: 1.65, interestRate: 0.50, term: 24 },
+            { id: 2, name: "NGUYEN VAN A", phone: "0912345678", amount: 20000000, feeRate: 1.65, interestRate: 0.60, term: 12 }
         ];
 
         let currentCustomerId = customers[0].id;
