@@ -63,7 +63,7 @@
         .bg-gray-200 { background-color: #e5e7eb; }
         .bg-yellow-50 { background-color: #fefce8; }
         .text-white { color: #ffffff; }
-        .rounded-xl { border-radius: 0.75rem; border-radius: calc(0.75rem - 1px); }
+        .rounded-xl { border-radius: 0.75rem; }
         .rounded-2xl { border-radius: 1rem; }
         .rounded-full { border-radius: 9999px; }
         .border { border-width: 1px; }
@@ -82,7 +82,6 @@
         .bg-black\/50 { background-color: rgba(0, 0, 0, 0.5); }
         .justify-center { justify-content: center; }
         .p-4 { padding: 1rem; }
-        .p-6 { padding: 1.5Nrem; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
         input { outline: none; }
@@ -144,7 +143,6 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1" style="display:block;margin-bottom:4px;">Lãi / tháng (%)</label>
-                    <!-- Đã hiệu chỉnh để nhận chính xác từ 0.1% đến 1% và các giá trị thập phân -->
                     <input type="text" inputmode="decimal" id="input-interest-rate" oninput="updateCurrentCustomerInfo()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-[15px] font-semibold" style="padding:10px 12px;width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #e5e7eb;" placeholder="0.1 hoặc 0,5">
                 </div>
             </div>
@@ -187,6 +185,11 @@
                 <div class="flex justify-between px-4 py-3" style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f3f4f6;background:#fefce8;">
                     <span class="text-gray-700 font-semibold">Lãi suất / tháng</span>
                     <span id="res-interest-rate" class="font-bold" style="color:#b45309;">0.50%</span>
+                </div>
+                <!-- Dòng Lãi suất / năm được thêm ngay dưới Lãi suất / tháng -->
+                <div class="flex justify-between px-4 py-3" style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f3f4f6;background:#fefce8;">
+                    <span class="text-gray-700 font-semibold">Lãi suất / năm</span>
+                    <span id="res-interest-rate-year" class="font-bold" style="color:#b45309;">6.00%</span>
                 </div>
                 <div class="flex justify-between px-4 py-3" style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f3f4f6;">
                     <span class="text-gray-600 font-medium">Phí rút tiền (<span id="res-fee-pct">1.65</span>%)</span>
@@ -247,7 +250,7 @@
     </div>
 
     <script>
-        let customers = JSON.parse(localStorage.getItem('calc_customers_v4')) || [
+        let customers = JSON.parse(localStorage.getItem('calc_customers_v5')) || [
             { id: 1, name: "NGUYEN VAN B", phone: "0912345678", amount: 10000000, feeRate: 1.65, interestRate: 0.50, term: 24 },
             { id: 2, name: "NGUYEN VAN A", phone: "0912345678", amount: 20000000, feeRate: 1.65, interestRate: 0.10, term: 12 }
         ];
@@ -256,7 +259,7 @@
         let selectedTerm = customers[0].term || 24;
 
         function saveToLocalStorage() {
-            localStorage.setItem('calc_customers_v4', JSON.stringify(customers));
+            localStorage.setItem('calc_customers_v5', JSON.stringify(customers));
         }
 
         function formatNumberWithDots(num) {
@@ -270,7 +273,6 @@
             return parseFloat(clean) || 0;
         }
 
-        // Cải tiến bộ phân tích tỷ lệ lãi suất/phí: Hỗ trợ hoàn hảo cho số từ 0.1 đến 1 và cả dấu phẩy (0,1 hoặc 0,5)
         function parseRateNumber(str) {
             if (!str && str !== 0) return 0;
             let clean = str.toString().replace(/,/g, '.');
@@ -283,9 +285,8 @@
             customers.forEach(c => {
                 const isActive = c.id === currentCustomerId;
                 const btn = document.createElement('button');
-                btn.className = `px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap shadow-sm`;
                 btn.style.cssText = `padding:8px 16px;border-radius:12px;font-size:12px;font-weight:bold;cursor:pointer;white-space:nowrap;transition:all 0.2s;` + 
-                    (isActive ? `background:#2563eb;color:#white;box-shadow:0 2px 4px rgba(37,99,235,0.3);color:#fff;` : `background:rgba(255,255,255,0.9);color:#374151;border:1px solid #e5e7eb;`);
+                    (isActive ? `background:#2563eb;color:#fff;box-shadow:0 2px 4px rgba(37,99,235,0.3);` : `background:rgba(255,255,255,0.9);color:#374151;border:1px solid #e5e7eb;`);
                 btn.innerHTML = `👤 ${c.name || 'Khách mới'}`;
                 btn.onclick = () => switchCustomer(c.id);
                 container.appendChild(btn);
@@ -374,7 +375,7 @@
 
             const P = c.amount;
             const feeRate = c.feeRate / 100;
-            const interestRate = c.interestRate / 100; // Xử lý chính xác giá trị từ 0.1% -> 1% (ví dụ 0.1 / 100 = 0.001)
+            const interestRate = c.interestRate / 100;
             const T = selectedTerm;
 
             [3, 6, 12, 24, 36].forEach(t => {
@@ -403,12 +404,16 @@
             const remPrincipal5 = T >= 5 ? P * (5 / T) : 0;
             const earlyFee5 = remPrincipal5 * 0.02;
 
+            // Tính lãi suất năm = Lãi suất tháng * 12
+            const yearlyInterestRate = c.interestRate * 12;
+
             document.getElementById('res-cust-name').innerText = c.name || '---';
             document.getElementById('res-cust-phone').innerText = c.phone || '---';
             document.getElementById('res-term-badge').innerText = `${T} Tháng`;
             document.getElementById('res-amount').innerText = formatNumberWithDots(P);
             document.getElementById('res-term').innerText = `${T} tháng`;
             document.getElementById('res-interest-rate').innerText = `${c.interestRate}%`;
+            document.getElementById('res-interest-rate-year').innerText = `${yearlyInterestRate.toFixed(2).replace(/\.?0+$/, '')}%`;
             document.getElementById('res-fee-pct').innerText = c.feeRate;
             document.getElementById('res-withdrawal-fee').innerText = formatNumberWithDots(withdrawalFee);
             document.getElementById('res-monthly-interest').innerText = formatNumberWithDots(monthlyInterest);
