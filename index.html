@@ -100,7 +100,7 @@
             </div>
             <div>
                 <button onclick="openGithubGuide()" class="text-xs bg-gray-900 text-white px-3.5 py-2 rounded-full font-semibold shadow-sm" style="background:#111827;color:#fff;padding:8px 14px;border-radius:9999px;">
-                    GitHub Guide
+                    TVK 1991
                 </button>
             </div>
         </div>
@@ -165,8 +165,8 @@
         <section class="glass-card" style="padding:0;overflow:hidden;">
             <div class="bg-blue-600 text-white px-4 py-3.5 flex justify-between items-center" style="background:#2563eb;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
                 <div>
-                    <div id="res-cust-name" class="font-bold text-base">NGUYEN VAN A</div>
-                    <div id="res-cust-phone" class="text-xs" style="color:#dbeafe;">123456789</div>
+                    <div id="res-cust-name" class="font-bold text-base">NGYEN VAN A</div>
+                    <div id="res-cust-phone" class="text-xs" style="color:#dbeafe;">12345678</div>
                 </div>
                 <div class="text-right">
                     <span id="res-term-badge" class="text-xs font-bold" style="background:rgba(255,255,255,0.2);padding:6px 12px;border-radius:9999px;">24 Tháng</span>
@@ -176,7 +176,7 @@
             <div class="divide-y divide-gray-100 text-[15px]" style="font-size:15px;">
                 <div class="flex justify-between px-4 py-3" style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f3f4f6;">
                     <span class="text-gray-600 font-medium">Số tiền rút</span>
-                    <span id="res-amount" class="font-bold">40,000,000</span>
+                    <span id="res-amount" class="font-bold">38,000,000</span>
                 </div>
                 <div class="flex justify-between px-4 py-3" style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f3f4f6;">
                     <span class="text-gray-600 font-medium">Kì hạn đăng ký trả góp</span>
@@ -233,26 +233,11 @@
         </section>
     </main>
 
-    <div id="github-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:16px;">
-        <div class="glass-card bg-white space-y-4" style="background:#fff;border-radius:24px;padding:24px;max-width:360px;width:100%;">
-            <div class="flex justify-between items-center" style="display:flex;justify-content:space-between;align-items:center;">
-                <h3 class="font-bold text-base">Hướng dẫn đưa lên GitHub</h3>
-                <button onclick="closeGithubGuide()" style="font-size:18px;">✕</button>
-            </div>
-            <ol class="text-xs space-y-2.5 text-gray-600" style="padding-left:16px;line-height:1.6;font-size:12px;color:#4b5563;">
-                <li>Tạo Repository mới (Public) trên GitHub.</li>
-                <li>Tạo file mới tên <b>index.html</b> và dán toàn bộ mã nguồn này vào.</li>
-                <li>Vào tab <b>Settings</b> -> <b>Pages</b>.</li>
-                <li>Mục <b>Build and deployment</b> chọn branch <code style="background:#f3f4f6;padding:2px 4px;border-radius:4px;">main</code> / <code style="background:#f3f4f6;padding:2px 4px;border-radius:4px;">root</code> và nhấn Save.</li>
-            </ol>
-            <button onclick="closeGithubGuide()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-sm" style="width:100%;background:#2563eb;color:#fff;padding:12px;border-radius:12px;font-weight:bold;">Đã hiểu</button>
-        </div>
-    </div>
 
     <script>
         let customers = JSON.parse(localStorage.getItem('calc_customers_v5')) || [
-            { id: 1, name: "NGUYEN VAN B", phone: "0912345678", amount: 10000000, feeRate: 2, interestRate: 0.50, term: 24 },
-            { id: 2, name: "NGUYEN VAN A", phone: "0912345678", amount: 20000000, feeRate: 2, interestRate: 0.10, term: 12 }
+            { id: 1, name: "NGUYEN VAN B", phone: "0912345678", amount: 10000000, feeRate: 1.65, interestRate: 0.50, term: 24 },
+            { id: 2, name: "NGUYEN VAN A", phone: "0912345678", amount: 20000000, feeRate: 1.65, interestRate: 0.10, term: 12 }
         ];
 
         let currentCustomerId = customers[0].id;
