@@ -1,523 +1,443 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tính Toán Lãi Suất Ngân Hàng Việt Nam</title>
-    <!-- Cấu hình PWA & Apple Touch Icon cho iPhone từ X đến 18 Pro Max -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Lãi Suất Bank">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%230b0f19%22/><text y=%22.7em%22 x=%2212%22 font-size=%2265%22>🏦</text></svg>">
-    
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-        }
-
-        body {
-            background-color: #05070b;
-            color: #f8fafc;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            overflow-x: hidden;
-        }
-
-        /* Hiệu ứng viền LED RGB 7 màu chạy quanh khung cực kỳ mượt mà */
-        @keyframes rgbLedBorder {
-            0% { border-color: #ff2a2a; box-shadow: 0 0 25px rgba(255, 42, 42, 0.5), inset 0 0 15px rgba(255, 42, 42, 0.2); }
-            14% { border-color: #ff7f00; box-shadow: 0 0 25px rgba(255, 127, 0, 0.5), inset 0 0 15px rgba(255, 127, 0, 0.2); }
-            28% { border-color: #ffd700; box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.2); }
-            42% { border-color: #00e676; box-shadow: 0 0 25px rgba(0, 230, 118, 0.5), inset 0 0 15px rgba(0, 230, 118, 0.2); }
-            57% { border-color: #00b0ff; box-shadow: 0 0 25px rgba(0, 176, 255, 0.5), inset 0 0 15px rgba(0, 176, 255, 0.2); }
-            71% { border-color: #651fff; box-shadow: 0 0 25px rgba(101, 31, 255, 0.5), inset 0 0 15px rgba(101, 31, 255, 0.2); }
-            85% { border-color: #e040fb; box-shadow: 0 0 25px rgba(224, 64, 251, 0.5), inset 0 0 15px rgba(224, 64, 251, 0.2); }
-            100% { border-color: #ff2a2a; box-shadow: 0 0 25px rgba(255, 42, 42, 0.5), inset 0 0 15px rgba(255, 42, 42, 0.2); }
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 430px;
-            background: #0f172a;
-            border-radius: 26px;
-            border: 3.5px solid #ff2a2a;
-            animation: rgbLedBorder 6s infinite linear;
-            padding: 18px;
-            position: relative;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        header h1 {
-            font-size: 17px;
-            font-weight: 900;
-            color: #38bdf8;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 4px;
-        }
-
-        header p {
-            font-size: 11px;
-            color: #94a3b8;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .section-title {
-            font-size: 12px;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #fbbf24;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        /* Danh sách Logo Ngân Hàng */
-        .bank-scroll {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            margin-bottom: 14px;
-            scrollbar-width: none;
-        }
-        .bank-scroll::-webkit-scrollbar {
-            display: none;
-        }
-
-        .bank-card {
-            min-width: 74px;
-            height: 62px;
-            background: #1e293b;
-            border: 2px solid #334155;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            padding: 4px;
-        }
-
-        .bank-card.active {
-            border-color: #38bdf8;
-            background: #0369a1;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
-            transform: scale(1.03);
-        }
-
-        .bank-card svg {
-            width: 26px;
-            height: 26px;
-            margin-bottom: 2px;
-        }
-
-        .bank-card span {
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #f1f5f9;
-        }
-
-        /* Tabs Tiết Kiệm / Vay Vốn */
-        .mode-tabs {
-            display: flex;
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 3px;
-            margin-bottom: 14px;
-        }
-
-        .mode-tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            font-size: 12px;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #94a3b8;
-            border-radius: 9px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .mode-tab.active {
-            background: #2563eb;
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
-        }
-
-        /* Khung nhập liệu */
-        .input-group {
-            margin-bottom: 12px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #e2e8f0;
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-        }
-
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 11px 13px;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 11px;
-            color: #ffffff;
-            font-size: 15px;
-            font-weight: 800;
-            outline: none;
-        }
-
-        .input-group input:focus, .input-group select:focus {
-            border-color: #38bdf8;
-            box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
-        }
-
-        /* Nút tính toán */
-        .btn-calc {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: #ffffff;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.5);
-            margin-bottom: 14px;
-        }
-
-        .btn-calc:active {
-            transform: scale(0.98);
-        }
-
-        /* Khung kết quả */
-        .result-box {
-            background: #1e293b;
-            border: 1.5px solid #334155;
-            border-radius: 14px;
-            padding: 14px;
-        }
-
-        .result-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 12px;
-        }
-
-        .result-row:last-child {
-            margin-bottom: 0;
-            padding-top: 8px;
-            border-top: 1px dashed #334155;
-        }
-
-        .result-label {
-            font-weight: 900;
-            color: #94a3b8;
-            text-transform: uppercase;
-        }
-
-        .result-value {
-            font-weight: 900;
-            color: #38bdf8;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-
-        .result-value.highlight {
-            color: #4ade80;
-            font-size: 16px;
-        }
-
-        /* Bảng lịch trả nợ / chi tiết */
-        .schedule-title {
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #fbbf24;
-            margin-top: 12px;
-            margin-bottom: 6px;
-        }
-
-        .schedule-table-container {
-            max-height: 130px;
-            overflow-y: auto;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            font-size: 11px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 6px 8px;
-            border-bottom: 1px solid #334155;
-        }
-
-        th {
-            background: #0f172a;
-            color: #94a3b8;
-            font-weight: 900;
-            text-transform: uppercase;
-            position: sticky;
-            top: 0;
-        }
-
-        td {
-            color: #e2e8f0;
-            font-weight: 700;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>CÔNG CỤ TÍNH TOÁN LÃI SUẤT NGÂN HÀNG VIỆT NAM</title>
+<!-- PWA & Apple Touch Icon Settings for iPhone Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lãi Suất VN">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%23030712'/%3E%3Cpath d='M256 96L96 208h32v192h96V288h64v112h96V208h32L256 96z' fill='%2300ffcc'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='120' fill='%23030712'/%3E%3Cpath d='M256 96L96 208h32v192h96V288h64v112h96V208h32L256 96z' fill='%2300ffcc'/%3E%3C/svg%3E">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #030712;
+    color: #f3f4f6;
+    min-height: 100vh;
+    margin: 0;
+    padding: 10px;
+    padding-top: max(10px, env(safe-area-inset-top));
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
+    overflow-x: hidden;
+    touch-action: manipulation;
+}
+@keyframes rgbBorder {
+    0% { border-color: #ff0000; box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+    14% { border-color: #ff7f00; box-shadow: 0 0 20px rgba(255, 127, 0, 0.5); }
+    28% { border-color: #ffff00; box-shadow: 0 0 20px rgba(255, 255, 0, 0.5); }
+    42% { border-color: #00ff00; box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
+    57% { border-color: #00ffff; box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
+    71% { border-color: #0000ff; box-shadow: 0 0 20px rgba(0, 0, 255, 0.5); }
+    85% { border-color: #8b00ff; box-shadow: 0 0 20px rgba(139, 0, 255, 0.5); }
+    100% { border-color: #ff0000; box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
+}
+.rgb-card {
+    border: 4px solid #ff0000;
+    animation: rgbBorder 6s infinite linear;
+}
+.bank-badge {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.bank-badge.active {
+    transform: scale(1.05);
+    border-color: #00ffff !important;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+    background: rgba(0, 255, 255, 0.15) !important;
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+</style>
 </head>
-<body>
+<body class="flex items-center justify-center">
 
-<div class="app-container">
-    <header>
-        <h1>BỘ TÍNH TOÁN LÃI SUẤT NGÂN HÀNG</h1>
-        <p>Cập nhật biểu lãi suất mới nhất Việt Nam</p>
-    </header>
-
-    <!-- Chọn Ngân Hàng -->
-    <div class="section-title">CHỌN NGÂN HÀNG</div>
-    <div class="bank-scroll" id="bankList"></div>
-
-    <!-- Tabs Chế độ -->
-    <div class="mode-tabs">
-        <div class="mode-tab active" onclick="switchMode('saving')" id="tabSaving">GỬI TIẾT KIỆM</div>
-        <div class="mode-tab" onclick="switchMode('loan')" id="tabLoan">VAY VỐN</div>
+<div class="w-full max-w-md bg-slate-950/95 backdrop-blur-2xl rounded-3xl p-4 shadow-2xl rgb-card my-auto">
+    <!-- Header Title -->
+    <div class="text-center mb-3">
+        <h1 class="text-sm sm:text-base font-black tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-cyan-400">
+            CÔNG CỤ TÍNH TOÁN LÃI SUẤT NGÂN HÀNG
+        </h1>
+        <p class="text-[10px] text-slate-400 font-extrabold uppercase mt-0.5 tracking-wide">HỆ THỐNG BIỂU LÃI SUẤT CHUẨN 2026</p>
     </div>
 
-    <!-- Nhập liệu -->
-    <div class="input-group">
-        <label id="lblAmount">SỐ TIỀN GỬI (VNĐ)</label>
-        <input type="text" id="txtAmount" value="100.000.000" oninput="formatCurrency(this)">
-    </div>
-
-    <div class="input-group">
-        <label>KỲ HẠN</label>
-        <select id="selTerm" onchange="updateRate(); calculate();">
-            <option value="1">1 Tháng</option>
-            <option value="3">3 Tháng</option>
-            <option value="6">6 Tháng</option>
-            <option value="12" selected>12 Tháng</option>
-            <option value="24">24 Tháng</option>
-        </select>
-    </div>
-
-    <div class="input-group" id="groupInterestType">
-        <label>HÌNH THỨC NHẬN LÃI</label>
-        <select id="selInterestType" onchange="calculate()">
-            <option value="maturity">CUỐI KỲ</option>
-            <option value="monthly">HÀNG THÁNG</option>
-            <option value="quarterly">HÀNG QUÝ</option>
-        </select>
-    </div>
-
-    <div class="input-group">
-        <label>LÃI SUẤT (%/NĂM) - CÓ THỂ ĐIỀU CHỈNH</label>
-        <input type="number" id="txtRate" value="6.0" step="0.1" oninput="calculate()">
-    </div>
-
-    <button class="btn-calc" onclick="calculate()">TÍNH TOÁN NGAY</button>
-
-    <!-- Kết quả -->
-    <div class="result-box" id="resultContainer">
-        <div class="result-row">
-            <span class="result-label">LÃI SUẤT ÁP DỤNG:</span>
-            <span class="result-value" id="resRate">6.0% / NĂM</span>
+    <!-- User inputs: Full Name and Interest Rate -->
+    <div class="grid grid-cols-2 gap-2 mb-3">
+        <div>
+            <label class="block text-[10px] font-black uppercase text-yellow-400 mb-1">HỌ VÀ TÊN</label>
+            <input type="text" id="fullName" placeholder="Nhập tên..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 font-bold shadow-inner">
         </div>
-        <div class="result-row">
-            <span class="result-label" id="lblResMain">TỔNG TIỀN LÃI DỰ KIẾN:</span>
-            <span class="result-value highlight" id="resInterest">6.000.000 VNĐ</span>
+        <div>
+            <label class="block text-[10px] font-black uppercase text-yellow-400 mb-1">LÃI SUẤT (%/NĂM)</label>
+            <input type="number" id="interestRate" step="0.01" value="5.20" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-cyan-300 focus:outline-none focus:border-cyan-400 font-black shadow-inner" oninput="calculate()">
         </div>
-        <div class="result-row">
-            <span class="result-label" id="lblResSub">TỔNG GỐC + LÃI:</span>
-            <span class="result-value" id="resTotal">106.000.000 VNĐ</span>
+    </div>
+
+    <!-- Bank Logos Selector Row -->
+    <div class="mb-3">
+        <label class="block text-[10px] font-black uppercase text-yellow-400 mb-1.5">CHỌN NGÂN HÀNG THƯƠNG MẠI</label>
+        <div id="bankList" class="flex gap-2 overflow-x-auto pb-1.5 pt-0.5 no-scrollbar">
+            <!-- Populated via JavaScript -->
         </div>
-        
-        <div id="scheduleSection" style="display:none;">
-            <div class="schedule-title" id="scheduleTitleText">LỊCH TRẢ NỢ CHI TIẾT HÀNG THÁNG</div>
-            <div class="schedule-table-container">
-                <table>
-                    <thead>
-                        <tr id="tableHeaderRow">
-                            <th>THÁNG</th>
-                            <th>GỐC TRẢ</th>
-                            <th>LÃI TRẢ</th>
-                            <th>TỔNG GỐC + LÃI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="scheduleBody"></tbody>
-                </table>
+    </div>
+
+    <!-- Mode Switcher Tabs (Deposit vs Loan) -->
+    <div class="flex bg-slate-900 p-1 rounded-xl mb-3 border border-slate-800">
+        <button id="tabDeposit" onclick="switchMode('deposit')" class="flex-1 py-2 text-[11px] font-black uppercase rounded-lg bg-blue-600 text-white shadow-md transition-all">
+            GỬI TIẾT KIỆM
+        </button>
+        <button id="tabLoan" onclick="switchMode('loan')" class="flex-1 py-2 text-[11px] font-black uppercase rounded-lg text-slate-400 hover:text-white transition-all">
+            VAY VỐN
+        </button>
+    </div>
+
+    <!-- Calculation Parameters -->
+    <div class="space-y-2.5 mb-3 bg-slate-900/60 p-3 rounded-2xl border border-slate-800">
+        <div>
+            <label id="amountLabel" class="block text-[10px] font-black uppercase text-cyan-400 mb-1">SỐ TIỀN GỬI (VNĐ)</label>
+            <input type="text" id="amountInput" value="100.000.000" oninput="formatCurrencyInput(this)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 font-black">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+            <div>
+                <label class="block text-[10px] font-black uppercase text-cyan-400 mb-1">KỲ HẠN</label>
+                <select id="termInput" onchange="onTermChange()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 font-bold">
+                    <option value="1">1 Tháng</option>
+                    <option value="3">3 Tháng</option>
+                    <option value="6">6 Tháng</option>
+                    <option value="12" selected>12 Tháng</option>
+                    <option value="18">18 Tháng</option>
+                    <option value="24">24 Tháng</option>
+                    <option value="36">36 Tháng</option>
+                </select>
             </div>
+            <div id="depositTypeContainer">
+                <label class="block text-[10px] font-black uppercase text-cyan-400 mb-1">HÌNH THỨC NHẬN LÃI</label>
+                <select id="depositType" onchange="calculate()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 font-bold">
+                    <option value="end">Cuối kỳ</option>
+                    <option value="monthly">Hàng tháng</option>
+                    <option value="quarterly">Hàng quý</option>
+                </select>
+            </div>
+            <div id="loanMethodContainer" class="hidden">
+                <label class="block text-[10px] font-black uppercase text-cyan-400 mb-1">PHƯƠNG PHÁP TRẢ</label>
+                <select id="loanMethod" onchange="calculate()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-2 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 font-bold">
+                    <option value="equal">Gốc đều hàng tháng</option>
+                    <option value="diminishing">Dư nợ giảm dần</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculate Action Button -->
+    <button onclick="calculate()" class="w-full py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black uppercase text-xs rounded-xl shadow-xl active:scale-95 transition-all mb-3 tracking-wider">
+        TÍNH TOÁN NGAY
+    </button>
+
+    <!-- Result Display Section -->
+    <div class="bg-black/85 border border-slate-800 rounded-2xl p-3 shadow-inner">
+        <h2 class="text-[11px] font-black uppercase text-green-400 mb-2 tracking-wider flex items-center justify-between border-b border-slate-800 pb-2">
+            <span>HIỂN THỊ NỘI DUNG</span>
+            <span id="resultBankName" class="text-cyan-400 font-black">VIETCOMBANK</span>
+        </h2>
+        
+        <div id="resultContent" class="space-y-1.5 text-xs">
+            <div class="flex justify-between items-center bg-slate-900/90 p-2 rounded-xl border border-slate-800/80">
+                <span class="text-[10px] font-bold text-slate-400 uppercase">KỲ HẠN ÁP DỤNG:</span>
+                <span id="resTerm" class="font-black text-white">12 THÁNG</span>
+            </div>
+            <div class="flex justify-between items-center bg-slate-900/90 p-2 rounded-xl border border-slate-800/80">
+                <span class="text-[10px] font-bold text-slate-400 uppercase">LÃI SUẤT ÁP DỤNG:</span>
+                <span id="resRate" class="font-black text-cyan-300">5.20% / NĂM</span>
+            </div>
+            <div class="flex justify-between items-center bg-slate-900/90 p-2 rounded-xl border border-slate-800/80">
+                <span id="resInterestLabel" class="text-[10px] font-bold text-slate-400 uppercase">TIỀN LÃI DỰ KIẾN:</span>
+                <span id="resInterest" class="font-black text-yellow-400">0 VNĐ</span>
+            </div>
+            <div class="flex justify-between items-center bg-slate-900/90 p-2 rounded-xl border border-slate-800/80" id="subPeriodRow">
+                <span id="subPeriodLabel" class="text-[10px] font-bold text-slate-400 uppercase">LÃI TRUNG BÌNH/THÁNG:</span>
+                <span id="resSubPeriod" class="font-black text-cyan-400">0 VNĐ</span>
+            </div>
+            <div class="flex justify-between items-center bg-slate-900/90 p-2 rounded-xl border border-slate-700 bg-gradient-to-r from-blue-950/50 to-purple-950/50">
+                <span id="resTotalLabel" class="text-[10px] font-black text-green-400 uppercase">TỔNG TIỀN NHẬN ĐƯỢC:</span>
+                <span id="resTotal" class="font-black text-green-400 text-xs sm:text-sm">0 VNĐ</span>
+            </div>
+        </div>
+
+        <div class="mt-2 text-[9px] text-slate-400 font-semibold italic text-center uppercase tracking-wide">
+            * Dữ liệu lãi suất cập nhật mới nhất tại hệ thống ngân hàng Việt Nam.
         </div>
     </div>
 </div>
 
 <script>
-    const banks = [
-        { id: 'vcb', name: 'VCB', fullName: 'Vietcombank', rateSaving: 4.7, rateLoan: 7.5, svg: '<circle cx="16" cy="16" r="14" fill="#006241"/><text x="16" y="20" font-size="9" fill="white" font-weight="900" text-anchor="middle">VCB</text>' },
-        { id: 'bidv', name: 'BIDV', fullName: 'BIDV', rateSaving: 4.8, rateLoan: 7.6, svg: '<circle cx="16" cy="16" r="14" fill="#005596"/><text x="16" y="20" font-size="8.5" fill="white" font-weight="900" text-anchor="middle">BIDV</text>' },
-        { id: 'agri', name: 'AGRI', fullName: 'Agribank', rateSaving: 4.8, rateLoan: 7.5, svg: '<circle cx="16" cy="16" r="14" fill="#0072bc"/><text x="16" y="20" font-size="8" fill="white" font-weight="900" text-anchor="middle">AGRI</text>' },
-        { id: 'vpb', name: 'VPB', fullName: 'VPBank', rateSaving: 5.3, rateLoan: 8.2, svg: '<circle cx="16" cy="16" r="14" fill="#009a49"/><text x="16" y="20" font-size="9" fill="white" font-weight="900" text-anchor="middle">VPB</text>' },
-        { id: 'hdb', name: 'HDB', fullName: 'HDBank', rateSaving: 5.2, rateLoan: 8.0, svg: '<circle cx="16" cy="16" r="14" fill="#f37021"/><text x="16" y="20" font-size="9" fill="white" font-weight="900" text-anchor="middle">HDB</text>' },
-        { id: 'acb', name: 'ACB', fullName: 'ACB', rateSaving: 5.0, rateLoan: 7.8, svg: '<circle cx="16" cy="16" r="14" fill="#003781"/><text x="16" y="20" font-size="9.5" fill="white" font-weight="900" text-anchor="middle">ACB</text>' },
-        { id: 'vib', name: 'VIB', fullName: 'VIB', rateSaving: 5.4, rateLoan: 8.3, svg: '<circle cx="16" cy="16" r="14" fill="#00539f"/><text x="16" y="20" font-size="9.5" fill="white" font-weight="900" text-anchor="middle">VIB</text>' },
-        { id: 'sacom', name: 'SACOM', fullName: 'Sacombank', rateSaving: 5.1, rateLoan: 8.1, svg: '<circle cx="16" cy="16" r="14" fill="#00483a"/><text x="16" y="19" font-size="7" fill="white" font-weight="900" text-anchor="middle">SACOM</text>' },
-        { id: 'lp', name: 'LPB', fullName: 'LPBank', rateSaving: 5.5, rateLoan: 8.5, svg: '<circle cx="16" cy="16" r="14" fill="#d32f2f"/><text x="16" y="20" font-size="9" fill="white" font-weight="900" text-anchor="middle">LPB</text>' },
-        { id: 'pv', name: 'PVB', fullName: 'PVcomBank', rateSaving: 5.8, rateLoan: 8.6, svg: '<circle cx="16" cy="16" r="14" fill="#ed1c24"/><text x="16" y="20" font-size="9" fill="white" font-weight="900" text-anchor="middle">PVB</text>' },
-        { id: 'bv', name: 'BVB', fullName: 'BVBank', rateSaving: 5.6, rateLoan: 8.4, svg: '<circle cx="16" cy="16" r="14" fill="#008559"/><text x="16" y="20" font-size="9" fill="white" font-weight="900" text-anchor="middle">BVB</text>' },
-        { id: 'citi', name: 'CITI', fullName: 'Citibank', rateSaving: 4.5, rateLoan: 7.2, svg: '<circle cx="16" cy="16" r="14" fill="#003b70"/><text x="16" y="20" font-size="8.5" fill="white" font-weight="900" text-anchor="middle">CITI</text>' }
-    ];
-
-    let currentMode = 'saving';
-    let selectedBankId = 'vpb';
-
-    function renderBanks() {
-        const container = document.getElementById('bankList');
-        container.innerHTML = banks.map(b => `
-            <div class="bank-card ${b.id === selectedBankId ? 'active' : ''}" onclick="selectBank('${b.id}')">
-                <svg viewBox="0 0 32 32">${b.svg}</svg>
-                <span>${b.name}</span>
-            </div>
-        `).join('');
+const banksData = [
+    {
+        id: 'vcb', name: 'Vietcombank', code: 'VCB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#006633"/><text x="50" y="62" font-size="42" font-weight="900" fill="white" text-anchor="middle" font-family="sans-serif">VCB</text></svg>',
+        rates: { 1: 2.2, 3: 2.5, 6: 3.5, 12: 5.2, 18: 5.3, 24: 5.3, 36: 5.3 }, loanRate: 7.5
+    },
+    {
+        id: 'bidv', name: 'BIDV', code: 'BIDV',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#003366"/><text x="50" y="62" font-size="32" font-weight="900" fill="#00ffcc" text-anchor="middle" font-family="sans-serif">BIDV</text></svg>',
+        rates: { 1: 2.2, 3: 2.5, 6: 3.5, 12: 5.2, 18: 5.2, 24: 5.3, 36: 5.3 }, loanRate: 7.6
+    },
+    {
+        id: 'agri', name: 'Agribank', code: 'AGRI',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#b30000"/><text x="50" y="62" font-size="34" font-weight="900" fill="white" text-anchor="middle" font-family="sans-serif">AGRI</text></svg>',
+        rates: { 1: 2.5, 3: 3.0, 6: 4.0, 12: 5.2, 18: 5.2, 24: 5.3, 36: 5.3 }, loanRate: 7.8
+    },
+    {
+        id: 'tcb', name: 'Techcombank', code: 'TCB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#cc0000"/><text x="50" y="62" font-size="38" font-weight="900" fill="white" text-anchor="middle" font-family="sans-serif">TCB</text></svg>',
+        rates: { 1: 3.8, 3: 4.2, 6: 5.5, 12: 6.2, 18: 5.7, 24: 5.7, 36: 5.7 }, loanRate: 8.0
+    },
+    {
+        id: 'vp', name: 'VPBank', code: 'VPB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#009933"/><text x="50" y="62" font-size="36" font-weight="900" fill="white" text-anchor="middle" font-family="sans-serif">VPB</text></svg>',
+        rates: { 1: 4.5, 3: 4.8, 6: 5.8, 12: 6.1, 18: 6.0, 24: 6.0, 36: 6.0 }, loanRate: 9.2
+    },
+    {
+        id: 'mb', name: 'MBBank', code: 'MB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#001a66"/><text x="50" y="62" font-size="42" font-weight="900" fill="#ffcc00" text-anchor="middle" font-family="sans-serif">MB</text></svg>',
+        rates: { 1: 3.6, 3: 4.0, 6: 4.9, 12: 6.0, 18: 6.1, 24: 6.8, 36: 6.8 }, loanRate: 8.2
+    },
+    {
+        id: 'acb', name: 'ACB', code: 'ACB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#0055ff"/><text x="50" y="62" font-size="40" font-weight="900" fill="white" text-anchor="middle" font-family="sans-serif">ACB</text></svg>',
+        rates: { 1: 3.5, 3: 3.9, 6: 4.7, 12: 5.6, 18: 5.6, 24: 5.6, 36: 5.6 }, loanRate: 8.5
+    },
+    {
+        id: 'hdb', name: 'HDBank', code: 'HDB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#ff6600"/><text x="50" y="62" font-size="34" font-weight="900" fill="white" text-anchor="middle" font-family="sans-serif">HDB</text></svg>',
+        rates: { 1: 3.9, 3: 4.2, 6: 5.5, 12: 6.1, 18: 6.0, 24: 5.8, 36: 5.8 }, loanRate: 8.8
+    },
+    {
+        id: 'sacom', name: 'Sacombank', code: 'STB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#002b80"/><text x="50" y="62" font-size="36" font-weight="900" fill="#00ffcc" text-anchor="middle" font-family="sans-serif">STB</text></svg>',
+        rates: { 1: 3.6, 3: 4.0, 6: 5.0, 12: 5.8, 18: 5.9, 24: 6.0, 36: 6.0 }, loanRate: 8.6
+    },
+    {
+        id: 'tp', name: 'TPBank', code: 'TPB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#6600cc"/><text x="50" y="62" font-size="36" font-weight="900" fill="#ff9900" text-anchor="middle" font-family="sans-serif">TPB</text></svg>',
+        rates: { 1: 3.8, 3: 4.1, 6: 5.3, 12: 6.1, 18: 6.0, 24: 6.0, 36: 6.0 }, loanRate: 8.5
+    },
+    {
+        id: 'vib', name: 'VIB', code: 'VIB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#0047b3"/><text x="50" y="62" font-size="38" font-weight="900" fill="#ff6600" text-anchor="middle" font-family="sans-serif">VIB</text></svg>',
+        rates: { 1: 3.9, 3: 4.2, 6: 5.4, 12: 6.2, 18: 6.1, 24: 6.1, 36: 6.1 }, loanRate: 8.7
+    },
+    {
+        id: 'pvcom', name: 'PVcomBank', code: 'PVC',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#cc9900"/><text x="50" y="62" font-size="34" font-weight="900" fill="white" text-anchor="middle" font-family="sans-serif">PVC</text></svg>',
+        rates: { 1: 3.8, 3: 4.1, 6: 5.3, 12: 6.3, 18: 6.2, 24: 6.2, 36: 6.2 }, loanRate: 9.0
+    },
+    {
+        id: 'lp', name: 'LPBank', code: 'LPB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#0033cc"/><text x="50" y="62" font-size="34" font-weight="900" fill="white" text-anchor="middle" font-family="sans-serif">LPB</text></svg>',
+        rates: { 1: 4.0, 3: 4.3, 6: 5.6, 12: 6.4, 18: 6.2, 24: 6.2, 36: 6.2 }, loanRate: 8.9
+    },
+    {
+        id: 'bv', name: 'BVBank', code: 'BVB',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#330066"/><text x="50" y="62" font-size="34" font-weight="900" fill="#00ffcc" text-anchor="middle" font-family="sans-serif">BVB</text></svg>',
+        rates: { 1: 4.2, 3: 4.5, 6: 5.8, 12: 6.5, 18: 6.3, 24: 6.3, 36: 6.3 }, loanRate: 9.5
+    },
+    {
+        id: 'citi', name: 'Citibank', code: 'CITI',
+        svg: '<svg viewBox="0 0 100 100" class="w-full h-full"><rect width="100" height="100" rx="20" fill="#003399"/><text x="50" y="62" font-size="32" font-weight="900" fill="#ff3333" text-anchor="middle" font-family="sans-serif">CITI</text></svg>',
+        rates: { 1: 2.5, 3: 3.0, 6: 4.0, 12: 5.0, 18: 5.0, 24: 5.0, 36: 5.0 }, loanRate: 7.5
     }
+];
 
-    function selectBank(id) {
-        selectedBankId = id;
-        renderBanks();
-        updateRate();
-        calculate();
+let currentMode = 'deposit';
+let selectedBankId = 'vcb';
+
+function initBanks() {
+    const container = document.getElementById('bankList');
+    container.innerHTML = '';
+    banksData.forEach(bank => {
+        const btn = document.createElement('div');
+        btn.className = `bank-badge p-1.5 rounded-xl bg-slate-900 border border-slate-700 text-center flex flex-col items-center justify-center w-20 h-20 ${bank.id === selectedBankId ? 'active' : ''}`;
+        btn.innerHTML = `<div class="w-10 h-10 rounded-lg mb-1 flex items-center justify-center overflow-hidden shadow">${bank.svg}</div><span class="text-[9px] font-black uppercase tracking-tight text-white truncate w-full">${bank.name}</span>`;
+        btn.onclick = () => selectBank(bank.id);
+        container.appendChild(btn);
+    });
+}
+
+function selectBank(id) {
+    selectedBankId = id;
+    initBanks();
+    document.getElementById('resultBankName').innerText = banksData.find(b => b.id === id).name.toUpperCase();
+    onTermChange();
+}
+
+function switchMode(mode) {
+    currentMode = mode;
+    const tabDeposit = document.getElementById('tabDeposit');
+    const tabLoan = document.getElementById('tabLoan');
+    const amountLabel = document.getElementById('amountLabel');
+    const loanMethodContainer = document.getElementById('loanMethodContainer');
+    const depositTypeContainer = document.getElementById('depositTypeContainer');
+    const resInterestLabel = document.getElementById('resInterestLabel');
+    const resTotalLabel = document.getElementById('resTotalLabel');
+    const subPeriodRow = document.getElementById('subPeriodRow');
+
+    if (mode === 'deposit') {
+        tabDeposit.className = "flex-1 py-2 text-[11px] font-black uppercase rounded-lg bg-blue-600 text-white shadow-md transition-all";
+        tabLoan.className = "flex-1 py-2 text-[11px] font-black uppercase rounded-lg text-slate-400 hover:text-white transition-all";
+        amountLabel.innerText = "SỐ TIỀN GỬI (VNĐ)";
+        loanMethodContainer.classList.add('hidden');
+        depositTypeContainer.classList.remove('hidden');
+        resInterestLabel.innerText = "TIỀN LÃI DỰ KIẾN:";
+        resTotalLabel.innerText = "TỔNG TIỀN NHẬN ĐƯỢC:";
+        subPeriodRow.style.display = 'flex';
+    } else {
+        tabLoan.className = "flex-1 py-2 text-[11px] font-black uppercase rounded-lg bg-purple-600 text-white shadow-md transition-all";
+        tabDeposit.className = "flex-1 py-2 text-[11px] font-black uppercase rounded-lg text-slate-400 hover:text-white transition-all";
+        amountLabel.innerText = "SỐ TIỀN VAY (VNĐ)";
+        loanMethodContainer.classList.remove('hidden');
+        depositTypeContainer.classList.add('hidden');
+        resInterestLabel.innerText = "TỔNG TIỀN LÃI PHẢI TRẢ:";
+        resTotalLabel.innerText = "TỔNG GỐC VÀ LÃI:";
+        subPeriodRow.style.display = 'flex';
     }
-
-    function switchMode(mode) {
-        currentMode = mode;
-        document.getElementById('tabSaving').classList.toggle('active', mode === 'saving');
-        document.getElementById('tabLoan').classList.toggle('active', mode === 'loan');
-        
-        document.getElementById('lblAmount').innerText = mode === 'saving' ? 'SỐ TIỀN GỬI (VNĐ)' : 'SỐ TIỀN VAY (VNĐ)';
-        document.getElementById('groupInterestType').style.display = mode === 'saving' ? 'block' : 'none';
-        
-        updateRate();
-        calculate();
-    }
-
-    function updateRate() {
-        const bank = banks.find(b => b.id === selectedBankId);
-        const term = parseInt(document.getElementById('selTerm').value);
-        let baseRate = currentMode === 'saving' ? bank.rateSaving : bank.rateLoan;
-        
-        if (term >= 12) baseRate += 0.3;
-        else if (term >= 6) baseRate += 0.1;
-
-        document.getElementById('txtRate').value = baseRate.toFixed(1);
-    }
-
-    function formatCurrency(input) {
-        let value = input.value.replace(/\D/g, '');
-        if (value === '') { input.value = ''; return; }
-        input.value = Number(value).toLocaleString('vi-VN');
-        calculate();
-    }
-
-    function getRawNumber(id) {
-        return parseFloat(document.getElementById(id).value.replace(/\./g, '').replace(/,/g, '')) || 0;
-    }
-
-    function formatMoney(num) {
-        return Math.round(num).toLocaleString('vi-VN') + ' VNĐ';
-    }
-
-    function calculate() {
-        const principal = getRawNumber('txtAmount');
-        const termMonths = parseInt(document.getElementById('selTerm').value);
-        const annualRate = parseFloat(document.getElementById('txtRate').value) / 100;
-        const scheduleSection = document.getElementById('scheduleSection');
-        const scheduleBody = document.getElementById('scheduleBody');
-
-        document.getElementById('resRate').innerText = (annualRate * 100).toFixed(1) + '% / NĂM';
-
-        if (currentMode === 'saving') {
-            scheduleSection.style.display = 'none';
-            document.getElementById('lblResMain').innerText = 'TỔNG TIỀN LÃI DỰ KIẾN:';
-            document.getElementById('lblResSub').innerText = 'TỔNG GỐC + LÃI:';
-
-            const interestType = document.getElementById('selInterestType').value;
-            let totalInterest = 0;
-
-            if (interestType === 'maturity') {
-                totalInterest = principal * annualRate * (termMonths / 12);
-            } else if (interestType === 'monthly') {
-                totalInterest = principal * (annualRate / 12) * termMonths;
-            } else if (interestType === 'quarterly') {
-                totalInterest = principal * (annualRate / 4) * (termMonths / 3);
-            }
-
-            document.getElementById('resInterest').innerText = formatMoney(totalInterest);
-            document.getElementById('resTotal').innerText = formatMoney(principal + totalInterest);
-        } else {
-            // TÍNH VAY VỐN (Dư nợ giảm dần)
-            scheduleSection.style.display = 'block';
-            document.getElementById('lblResMain').innerText = 'TỔNG LÃI PHẢI TRẢ:';
-            document.getElementById('lblResSub').innerText = 'TỔNG GỐC + LÃI PHẢI TRẢ:';
-
-            let monthlyPrincipal = principal / termMonths;
-            let remainingPrincipal = principal;
-            let totalInterest = 0;
-            let html = '';
-
-            scheduleBody.innerHTML = '';
-            for (let i = 1; i <= termMonths; i++) {
-                let monthlyInterest = remainingPrincipal * (annualRate / 12);
-                let totalMonthly = monthlyPrincipal + monthlyInterest;
-                totalInterest += monthlyInterest;
-
-                html += `<tr>
-                    <td>THÁNG ${i}</td>
-                    <td>${formatMoney(monthlyPrincipal)}</td>
-                    <td>${formatMoney(monthlyInterest)}</td>
-                    <td><b>${formatMoney(totalMonthly)}</b></td>
-                </tr>`;
-                remainingPrincipal -= monthlyPrincipal;
-            }
-            scheduleBody.innerHTML = html;
-            document.getElementById('resInterest').innerText = formatMoney(totalInterest);
-            document.getElementById('resTotal').innerText = formatMoney(principal + totalInterest);
-        }
-    }
-
-    // Khởi chạy khi tải trang
-    renderBanks();
-    updateRate();
+    onTermChange();
     calculate();
+}
+
+function onTermChange() {
+    const bank = banksData.find(b => b.id === selectedBankId);
+    const term = parseInt(document.getElementById('termInput').value);
+    const rateInput = document.getElementById('interestRate');
+    if (currentMode === 'deposit') {
+        const rate = bank.rates[term] || 5.2;
+        rateInput.value = rate.toFixed(2);
+    } else {
+        rateInput.value = bank.loanRate.toFixed(2);
+    }
+    calculate();
+}
+
+function formatCurrencyInput(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value === '') {
+        input.value = '';
+        return;
+    }
+    input.value = Number(value).toLocaleString('vi-VN');
+    calculate();
+}
+
+function getRawAmount(id) {
+    const val = document.getElementById(id).value.replace(/\./g, '').replace(/,/g, '');
+    return parseFloat(val) || 0;
+}
+
+function formatVND(num) {
+    return Math.round(num).toLocaleString('vi-VN') + ' VNĐ';
+}
+
+function calculate() {
+    const amount = getRawAmount('amountInput');
+    const rate = parseFloat(document.getElementById('interestRate').value) || 0;
+    const termMonths = parseInt(document.getElementById('termInput').value) || 12;
+    
+    const resTerm = document.getElementById('resTerm');
+    const resRate = document.getElementById('resRate');
+    const resInterest = document.getElementById('resInterest');
+    const resSubPeriod = document.getElementById('resSubPeriod');
+    const subPeriodLabel = document.getElementById('subPeriodLabel');
+    const resTotal = document.getElementById('resTotal');
+
+    resTerm.innerText = termMonths + " THÁNG";
+    resRate.innerText = rate.toFixed(2) + "% / NĂM";
+
+    const annualRateDecimal = rate / 100;
+
+    if (currentMode === 'deposit') {
+        let totalInterest = 0;
+        let subInterest = 0;
+        const depositType = document.getElementById('depositType').value;
+
+        if (depositType === 'end') {
+            if (termMonths <= 12) {
+                totalInterest = amount * annualRateDecimal * (termMonths / 12);
+            } else {
+                const years = termMonths / 12;
+                totalInterest = amount * Math.pow(1 + annualRateDecimal, years) - amount;
+            }
+            subInterest = totalInterest / termMonths;
+            subPeriodLabel.innerText = "LÃI TRUNG BÌNH/THÁNG:";
+        } else if (depositType === 'monthly') {
+            totalInterest = amount * annualRateDecimal * (termMonths / 12);
+            subInterest = totalInterest / termMonths;
+            subPeriodLabel.innerText = "LÃI NHẬN HÀNG THÁNG:";
+        } else if (depositType === 'quarterly') {
+            totalInterest = amount * annualRateDecimal * (termMonths / 12);
+            subInterest = totalInterest / (termMonths / 3);
+            subPeriodLabel.innerText = "LÃI NHẬN HÀNG QUÝ:";
+        }
+
+        const totalAmount = amount + totalInterest;
+        resInterest.innerText = formatVND(totalInterest);
+        resSubPeriod.innerText = formatVND(subInterest);
+        resTotal.innerText = formatVND(totalAmount);
+    } else {
+        const monthlyRate = annualRateDecimal / 12;
+        const method = document.getElementById('loanMethod').value;
+        let totalInterest = 0;
+        let totalPayment = 0;
+        let firstMonthPayment = 0;
+
+        if (method === 'equal') {
+            const principalPerMonth = amount / termMonths;
+            let remaining = amount;
+            for (let i = 0; i < termMonths; i++) {
+                const interestMonth = remaining * monthlyRate;
+                totalInterest += interestMonth;
+                if (i === 0) firstMonthPayment = principalPerMonth + interestMonth;
+                remaining -= principalPerMonth;
+            }
+            totalPayment = amount + totalInterest;
+            subPeriodLabel.innerText = "GỐC + LÃI THÁNG 1:";
+            resSubPeriod.innerText = formatVND(firstMonthPayment);
+        } else {
+            if (monthlyRate === 0) {
+                totalInterest = 0;
+                totalPayment = amount;
+                firstMonthPayment = amount / termMonths;
+            } else {
+                const emi = (amount * monthlyRate * Math.pow(1 + monthlyRate, termMonths)) / (Math.pow(1 + monthlyRate, termMonths) - 1);
+                totalPayment = emi * termMonths;
+                totalInterest = totalPayment - amount;
+                firstMonthPayment = emi;
+            }
+            subPeriodLabel.innerText = "TIỀN TRẢ HÀNG THÁNG:";
+            resSubPeriod.innerText = formatVND(firstMonthPayment);
+        }
+
+        resInterest.innerText = formatVND(totalInterest);
+        resTotal.innerText = formatVND(totalPayment);
+    }
+}
+
+window.onload = function() {
+    initBanks();
+    calculate();
+};
 </script>
 
 </body>
