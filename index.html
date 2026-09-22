@@ -98,9 +98,12 @@
                 </div>
                 <h1 class="font-bold text-lg tracking-tight">Tính Lãi Trả Góp</h1>
             </div>
-            <div>
+            <div class="flex items-center space-x-2">
+                <a href="./Tinhlai.html" target="_blank" rel="noopener" class="text-xs bg-green-600 text-white px-3.5 py-2 rounded-full font-semibold shadow-sm" style="background:#16a34a;color:#fff;padding:8px 14px;border-radius:9999px;text-decoration:none;display:inline-block;">
+                    Lãi suất ngân hàng
+                </a>
                 <button onclick="openGithubGuide()" class="text-xs bg-gray-900 text-white px-3.5 py-2 rounded-full font-semibold shadow-sm" style="background:#111827;color:#fff;padding:8px 14px;border-radius:9999px;">
-                   Mod/TVK 1991
+                    Mod/TVK 1991
                 </button>
             </div>
         </div>
@@ -123,27 +126,27 @@
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1" style="display:block;margin-bottom:4px;">Tên khách hàng</label>
-                    <input type="text" id="input-name" oninput="updateCurrentCustomerInfo()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-[15px] font-semibold" style="padding:10px 12px;width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #e5e7eb;">
+                    <input type="text" id="input-name" oninput="updateCurrentCustomerInfo()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-[15px] font-semibold" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;font-size:15px;font-weight:600;"/>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1" style="display:block;margin-bottom:4px;">Số điện thoại</label>
-                    <input type="text" id="input-phone" oninput="updateCurrentCustomerInfo()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-[15px] font-semibold" style="padding:10px 12px;width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #e5e7eb;">
+                    <input type="text" id="input-phone" oninput="updateCurrentCustomerInfo()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-[15px] font-semibold" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;font-size:15px;font-weight:600;"/>
                 </div>
             </div>
 
             <div>
                 <label class="block text-xs font-medium text-gray-500 mb-1" style="display:block;margin-bottom:4px;">Số tiền rút (VNĐ)</label>
-                <input type="text" inputmode="numeric" id="input-amount" oninput="handleAmountInput(this)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-base font-bold text-blue-600" style="padding:10px 12px;width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #e5e7eb;color:#2563eb;" placeholder="38.000.000">
+                <input type="text" inputmode="numeric" id="input-amount" oninput="handleAmountInput(this)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-base font-bold" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;font-size:16px;font-weight:700;"/>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1" style="display:block;margin-bottom:4px;">Phí rút (%)</label>
-                    <input type="text" inputmode="decimal" id="input-fee-rate" oninput="updateCurrentCustomerInfo()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-[15px] font-semibold" style="padding:10px 12px;width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #e5e7eb;" placeholder="1.65">
+                    <input type="text" inputmode="decimal" id="input-fee-rate" oninput="updateCurrentCustomerInfo()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-[15px] font-semibold" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;font-size:15px;font-weight:600;"/>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1" style="display:block;margin-bottom:4px;">Lãi / tháng (%)</label>
-                    <input type="text" inputmode="decimal" id="input-interest-rate" oninput="updateCurrentCustomerInfo()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-[15px] font-semibold" style="padding:10px 12px;width:100%;box-sizing:border-box;border-radius:12px;border:1px solid #e5e7eb;" placeholder="0.1 hoặc 0,5">
+                    <input type="text" inputmode="decimal" id="input-interest-rate" oninput="updateCurrentCustomerInfo()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-[15px] font-semibold" style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;font-size:15px;font-weight:600;"/>
                 </div>
             </div>
 
@@ -186,7 +189,6 @@
                     <span class="text-gray-700 font-semibold">Lãi suất / tháng</span>
                     <span id="res-interest-rate" class="font-bold" style="color:#b45309;">0.50%</span>
                 </div>
-                <!-- Dòng Lãi suất / năm được thêm ngay dưới Lãi suất / tháng -->
                 <div class="flex justify-between px-4 py-3" style="display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #f3f4f6;background:#fefce8;">
                     <span class="text-gray-700 font-semibold">Lãi suất / năm</span>
                     <span id="res-interest-rate-year" class="font-bold" style="color:#b45309;">6.00%</span>
@@ -389,7 +391,6 @@
             const remPrincipal5 = T >= 5 ? P * (5 / T) : 0;
             const earlyFee5 = remPrincipal5 * 0.02;
 
-            // Tính lãi suất năm = Lãi suất tháng * 12
             const yearlyInterestRate = c.interestRate * 12;
 
             document.getElementById('res-cust-name').innerText = c.name || '---';
